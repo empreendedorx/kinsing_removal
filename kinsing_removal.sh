@@ -8,51 +8,51 @@ log() {
     echo "$(date +'%Y-%m-%d %H:%M:%S') - $1" >> "$LOGFILE"
 }
 
-# ALSO TEST THE SSH STATUS
+# TESTA O STATUS DO SSH
 STATUS_SSH=$(pgrep ssh)
 if [[ "${STATUS_SSH}" = "" ]]; then
         /usr/bin/systemctl start ssh
 fi
 
-# DELETE PRELOAD LD LIBRARY
+# EXCLUI A BIBLIOTECA LD PRELOAD
 echo '' > /etc/ld.so.preload
 
-# BOT SERVICE IS KINSING SERVICE
+# SERVIÇO BOT É O SERVIÇO KINSING
 /usr/bin/systemctl stop bot.service &>/dev/null
 /usr/bin/systemctl disable bot.service &>/dev/null
 
-# DELETE BOT SERVICE
+# EXCLUI O SERVIÇO BOT
 echo '' > /lib/systemd/system/bot.service
 
-# KILL THE KINSING FROM NETWORK
+# MATA O PROCESSO KINSING NA REDE
 KINSING_PROC=$(netstat -tlp | grep kinsing | awk '/kinsing */ {split($NF,a,"/"); print a[1]}')
 KDEV_PROC=$(netstat -tlp | grep kdevtmpfsi | awk '/kdevtmpfsi */ {split($NF,a,"/"); print a[1]}')
 if [[ $KINSING_PROC =~ ^[0-9]+$ ]]; then
-        log "KINSING FOUND IN NETWORK -> ${KINSING_PROC}"
+        log "KINSING ENCONTRADO NA REDE -> ${KINSING_PROC}"
         kill $KINSING_PROC
-        log "Killed KINSING process: ${KINSING_PROC}"
+        log "Processo KINSING finalizado: ${KINSING_PROC}"
 fi
 if [[ $KDEV_PROC =~ ^[0-9]+$ ]]; then
-        log "KDEVTMPFSI FOUND IN NETWORK -> ${KDEV_PROC}"
+        log "KDEVTMPFSI ENCONTRADO NA REDE -> ${KDEV_PROC}"
         kill $KDEV_PROC
-        log "Killed KDEV process: ${KDEV_PROC}"
+        log "Processo KDEV finalizado: ${KDEV_PROC}"
 fi
 
-# KILL THE KINSING PROCESS
+# MATA O PROCESSO KINSING
 if [[ $(pgrep kdevtmpfsi) != "" ]];then
-        log "MALWARE KDEV FOUND"
+        log "MALWARE KDEV ENCONTRADO"
         kill $(pgrep kdevtmp)
-        log "Killed KDEV process: $(pgrep kdevtmp)"
+        log "Processo KDEV finalizado: $(pgrep kdevtmp)"
 fi
 if [[ $(pgrep kinsing) != "" ]]; then
-        log "MALWARE KIN FOUND"
+        log "MALWARE KIN ENCONTRADO"
         kill $(pgrep kinsing)
-        log "Killed KINSING process: $(pgrep kinsing)"
+        log "Processo KINSING finalizado: $(pgrep kinsing)"
 fi
 
-# REMOVE KINSING FROM TMP & DATA DIRECTORY
+# REMOVE KINSING DOS DIRETÓRIOS TMP E DATA
 if ls /tmp/kdevtmpfsi* /tmp/kinsing* /var/tmp/kinsing* /var/tmp/kdevtmpfsi* /etc/data/kinsing /etc/data/libsystem.so &>/dev/null; then
-    log "Deleting KINSING-related files"
+    log "Excluindo arquivos relacionados ao KINSING"
     rm -f /tmp/kdevtmpfsi* /tmp/kinsing* /var/tmp/kinsing* /var/tmp/kdevtmpfsi* /etc/data/kinsing /etc/data/libsystem.so
-    log "Deleted KINSING files from /tmp, /var/tmp, and /etc/data"
+    log "Arquivos KINSING excluídos de /tmp, /var/tmp e /etc/data"
 fi
